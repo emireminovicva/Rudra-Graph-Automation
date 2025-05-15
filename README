@@ -1,0 +1,62 @@
+# Databricks Automation Framework
+
+## Goal
+This framework aims to integrate Jira/Xray and GitHub to facilitate:
+- Test case creation and management.
+- Automated execution of test cases on Databricks.
+- Reporting of test execution results back to Jira.
+- Seamless version control and collaboration through GitHub.
+
+## Project Structure
+```
+Databricks2/
+├── pom.xml                        # Maven project configuration
+├── src/
+│   ├── main/
+│   │   ├── java/
+│   │   │   ├── framework/DatabaseDriver.java  # Handles Databricks connections
+│   │   │   ├── runners/TestRunner.java        # Main test execution entry point
+│   │   │   ├── steps/QuerySteps.java          # Step definitions for tests
+│   │   ├── resources/
+│   │   │   ├── features/databricks_neo4j.feature  # Cucumber test scenarios
+```
+
+## Setup Instructions
+1. **Clone the repository:**
+   ```sh
+   git clone <repository_url>
+   cd Databricks2
+   ```
+2. **Configure dependencies:**
+   - Ensure JDK 8+ is installed.
+   - Use Maven to install dependencies:
+     ```sh
+     mvn clean install
+     ```
+
+## Running Tests
+Test execution is performed as a Databricks job. To run tests:
+1. Upload the generated JAR file to Databricks.
+2. Configure and trigger a job in Databricks with the appropriate test parameters.
+3. Monitor execution logs and retrieve results from Databricks.
+
+## Integration with Jira/Xray and GitHub
+- **Test cases are managed in Jira/Xray.**
+- **Execution is triggered from Jira to github to databricks.**
+- **Results are pushed back to Jira for reporting.**
+
+## Reporting
+- Execution reports are generated and linked to Jira test cases.
+- Logs and execution results are stored for review.
+
+## Future Enhancements
+- Automate test case creation in Jira based on GitHub PRs.
+- Extend support for additional reporting mechanisms.
+- Improve integration with CI/CD pipelines.
+
+## Contributors
+- Emir Eminovic
+
+## License
+This project is licensed under Amida Technology Solutions.
+
