@@ -3,6 +3,8 @@ package framework;
 import org.apache.spark.sql.*;
 import org.neo4j.driver.*;
 import org.neo4j.driver.Record;
+import framework.AzureTokenProvider;
+import com.microsoft.aad.msal4j.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -74,12 +76,37 @@ public class DatabaseDriver {
     }
 
     public static void connectToNeo4j() {
+
         try {
             Properties config = new Properties();
             try (InputStream input = DatabaseDriver.class.getClassLoader().getResourceAsStream("neo4j_config.properties")) {
                 if (input == null) {
                     throw new IOException("❌ Failed to load neo4j_config.properties from classpath!");
                 }
+                config.load(input);
+            }
+
+            String neo4jUrl = config.getProperty("neo4j.url");
+            String clientId = config.getProperty("azure.client.id");
+            String clientSecret = config.getProperty("azure.client.secret");
+            String authority = config.getProperty("azure.authority");
+            String scope = config.getProperty("azure.scope");
+
+            log.info("🔐 Acquiring token via AzureTokenProvider...");
+
+            AzureTokenProvider tokenProvider = new AzureTokenProvider(clientId, clientSecret, authority, scope);
+            String accessToken = tokenProvider.getAccessToken();
+
+            AuthToken authToken = AuthTokens.bearer(accessToken);
+            neo4jDriver = GraphDatabase.driver(neo4jUrl, authToken);
+
+            log.info("✅ Successfully connected to Neo4j using Azure token!");
+
+        } catch (Exception e) {
+            log.error("❌ Failed to connect to Neo4j using Azure Token: " + e.getMessage());
+            throw new RuntimeException("❌ Token-based connection to Neo4j failed", e);
+        }
+                        }
                 config.load(input);
             }
 
